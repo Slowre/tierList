@@ -1,275 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tier List</title>
-  <style>
-    :root {
-      --color-s: #ff7f80;
-      --color-a: #ffc07f;
-      --color-b: #ffdf80;
-      --color-c: #fdff7f;
-      --color-d: #bfff7f;
-      --color-e: #7fff7f;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    button {
-      background: transparent;
-      border: 0;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    body {
-      background: black;
-      color: white;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-        sans-serif;
-      margin: 0 auto;
-      max-width: 500px;
-      padding-inline: 32px;
-      user-select: none;
-    }
-
-    #top-header {
-      display: flex;
-      justify-content: center;
-      padding-block: 8px;
-
-      & img {
-        max-width: 300px;
-        height: auto;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tier List</title>
+    <style>
+      :root {
+        --color-s: #ff7f80;
+        --color-a: #ffc07f;
+        --color-b: #ffdf80;
+        --color-c: #fdff7f;
+        --color-d: #bfff7f;
+        --color-e: #7fff7f;
       }
-    }
 
-    .tier {
-      border: 1px solid #444;
-      display: flex;
-      flex-direction: column;
-      background: #1f1f1f;
-    }
-
-    .row {
-      display: flex;
-      flex-direction: row;
-      border-bottom: 1px solid #111;
-    }
-
-    .label {
-      cursor: pointer;
-
-      background: var(--level, #1df);
-      color: #333;
-      font-weight: bold;
-      height: 50px;
-      width: 50px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &span:focus {
-        outline: 1px solid #fff;
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
       }
-    }
 
-    #selector {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    #selector-buttons {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-
-      & button,
-      & label {
+      button {
+        background: transparent;
+        border: 0;
+        color: #fff;
         cursor: pointer;
+      }
 
-        border-radius: 50%;
+      body {
+        background: black;
+        color: white;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        margin: 0 auto;
+        max-width: 500px;
+        padding-inline: 32px;
+        user-select: none;
+      }
 
-        transition: all 0.3s ease;
-        background: #222;
+      #top-header {
         display: flex;
         justify-content: center;
-        align-items: center;
-        width: 48px;
-        height: 48px;
-        padding: 8px;
+        padding-block: 8px;
 
-        &:hover {
-          background: #444;
-          scale: 1.1;
+        & img {
+          max-width: 300px;
+          height: auto;
         }
       }
 
-      & svg {
+      .tier {
+        border: 1px solid #444;
+        display: flex;
+        flex-direction: column;
+        background: #1f1f1f;
+      }
+
+      .row {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid #111;
+        transition: all 0.3s ease;
+
+        &.drag-over {
+          scale: 1.01;
+          background: #555;
+        }
+      }
+
+      .label {
+        cursor: pointer;
+
+        background: var(--level, #1df);
+        color: #333;
+        font-weight: bold;
+        height: 50px;
+        width: 50px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &span:focus {
+          outline: 1px solid #fff;
+        }
+      }
+
+      #selector {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      #selector-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+
+        & button,
+        & label {
+          cursor: pointer;
+
+          border-radius: 50%;
+
+          transition: all 0.3s ease;
+          background: #222;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 48px;
+          height: 48px;
+          padding: 8px;
+
+          &:hover {
+            background: #444;
+            scale: 1.1;
+          }
+        }
+
+        & svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      #selector-items {
+        border: 1px solid #1f1f1f;
         width: 100%;
-        height: 100%;
+        height: 200px;
+        margin-bottom: 100px;
+        display: flex;
       }
-    }
 
-    #selector-items {
-      border: 1px solid #1f1f1f;
-      width: 100%;
-      height: 200px;
-      margin-bottom: 100px;
-      display: flex;
-    }
+      .item-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        background: #fff;
+        cursor: grab;
 
-    .item-image {
-      width: 50px;
-      height: 50px;
-      object-fit: cover;
-      background: #fff;
-      cursor: grab;
-    }
-  </style>
-  <script type="module">
-    const $ = (el) => document.querySelector(el);
-    const $$ = (el) => document.querySelectorAll(el);
-
-    const imageInput = $("#image-input");
-    const itemsSection = $("#selector-items");
-
-    function createItem(src) {
-      const imgElement = document.createElement("img");
-      imgElement.draggable = true;
-      imgElement.src = src;
-      imgElement.className = "item-image";
-
-      imgElement.addEventListener("dragstart", handleDragStart);
-      imgElement.addEventListener("dragend", handleDragEnd);
-      itemsSection.appendChild(imgElement);
-      return imgElement;
-    }
-
-    imageInput.addEventListener("change", (event) => {
-      const [file] = event.target.files;
-      if (file) {
-        const reader = new FileReader();
-
-        reader.onload = (eventReader) => {
-          createItem(eventReader.target.result);
-        };
-        reader.readAsDataURL(file);
+        &.drag-preview {
+          opacity: 0.5;
+          pointer-events: none;
+        }
       }
-    });
+      #selector-buttons label::before,
+      button::before {
+        font-size: 13px;
+        font-weight: bold;
+        content: attr(data-button);
+        position: absolute;
+        background-color: #707070;
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border-radius: 100px;
+        box-shadow: 0 5px 10px rgba(255, 255, 255, 0.089);
+        transform: translateY(-20px) rotate(25deg);
+        opacity: 0;
+        transition: 200ms cubic-bezier(.42,0,.44,1.68);
+      }
 
-    let draggedElement = null;
-    let sourceContainer = null;
+      #selector-buttons label:hover::before,
+      button:hover::before {
+        animation: delayedHoverBefore 0.3s forwards 0.5s;
+      }
 
-    const rows = $$(".tier .row");
+      #selector-buttons label:hover::after,
+      button:hover::after {
+        animation: delayedHoverAfter 0.3s forwards 0.5s; 
+      }
 
-    rows.forEach((row) => {
-      row.addEventListener("drop", handleDrop);
-      row.addEventListener("dragover", handleDropOver);
-      row.addEventListener("dragleave", handleDragLeave);
-    })
+      @keyframes delayedHoverBefore {
+        to {
+          transform: translateY(-65px) rotate(0);
+          opacity: 1;
+        }
+      }
 
-    function handleDrop(event) {
-      event.preventDefault();
-      console.log();
+      @keyframes delayedHoverAfter {
+        to {
+          transform: translateY(-42px) rotate(0);
+          opacity: 1;
+        }
+      }
+    </style>
+    <script type="module">
+      const $ = (el) => document.querySelector(el);
+      const $$ = (el) => document.querySelectorAll(el);
 
-    }
+      const imageInput = $("#image-input");
+      const itemsSection = $("#selector-items");
 
-    function handleDropOver(event) {
-      event.preventDefault();
-    }
-    function handleDragLeave(event) {
-      event.preventDefault();
-    }
+      function createItem(src) {
+        const imgElement = document.createElement("img");
+        imgElement.draggable = true;
+        imgElement.src = src;
+        imgElement.className = "item-image";
 
-    function handleDragStart(event) {
-      console.log("drag start", event.target);
-      draggedElement = event.target;
-      const sourceContainer = draggedElement.parentNode;
-      event.dataTransfer.setData("text/plain", draggedElement.src);
-    }
+        imgElement.addEventListener("dragstart", handleDragStart);
+        imgElement.addEventListener("dragend", handleDragEnd);
+        itemsSection.appendChild(imgElement);
+        return imgElement;
+      }
 
-    function handleDragEnd(event) {
-      console.log("drag end", event.target);
+      imageInput.addEventListener("change", (event) => {
+        const { files } = event.target;
+        console.log(files);
+        Array.from(files).forEach((element) => {
+          const reader = new FileReader();
+
+          reader.onload = (eventReader) => {
+            createItem(eventReader.target.result);
+          };
+          reader.readAsDataURL(element);
+        });
+      });
+
       let draggedElement = null;
       let sourceContainer = null;
-    }
-  </script>
-</head>
 
-<body>
-  <header id="top-header">
-    <img src="/assets/Tierlisttitlle.png" alt="" />
-  </header>
+      const rows = $$(".tier .row");
 
-  <section class="tier">
-    <div class="row">
-      <aside class="label" style="--level: var(--color-s)">
-        <span contenteditable="true">S</span>
-      </aside>
-    </div>
+      rows.forEach((row) => {
+        row.addEventListener("drop", handleDrop);
+        row.addEventListener("dragover", handleDragOver);
+        row.addEventListener("dragleave", handleDragLeave);
+      });
 
-    <div class="row">
-      <aside class="label" style="--level: var(--color-a)">
-        <span contenteditable="true">A</span>
-      </aside>
-    </div>
-    <div class="row">
-      <aside class="label" style="--level: var(--color-b)">
-        <span contenteditable="true">B</span>
-      </aside>
-    </div>
-    <div class="row">
-      <aside class="label" style="--level: var(--color-c)">
-        <span contenteditable="true">C</span>
-      </aside>
-    </div>
-    <div class="row">
-      <aside class="label" style="--level: var(--color-d)">
-        <span contenteditable="true">D</span>
-      </aside>
-    </div>
-    <div class="row">
-      <aside class="label" style="--level: var(--color-e)">
-        <span contenteditable="true">E</span>
-      </aside>
-    </div>
-  </section>
-  <footer id="selector">
-    <section id="selector-buttons">
-      <label>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-          <path d="M9 12h6" />
-          <path d="M12 9v6" />
-        </svg>
-        <input id="image-input" type="file" hidden accept="image/*" />
-      </label>
-      <button>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-          <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-        </svg>
-      </button>
+      itemsSection.addEventListener("drop", handleDrop);
+      itemsSection.addEventListener("dragover", handleDragOver);
+      itemsSection.addEventListener("dragleave", handleDragLeave);
+
+      function handleDrop(event) {
+        event.preventDefault();
+
+        const { currentTarget, dataTransfer } = event;
+        if (sourceContainer && draggedElement) {
+          sourceContainer.removeChild(draggedElement);
+        }
+
+        if (draggedElement) {
+          const src = dataTransfer.getData("text/plain");
+          const imgElement = createItem(src);
+          currentTarget.appendChild(imgElement);
+        }
+        currentTarget.classList.remove("drag-over");
+
+        currentTarget.querySelector(".drag-preview")?.remove();
+      }
+
+      function handleDragOver(event) {
+        event.preventDefault();
+        const { currentTarget, dataTransfer } = event;
+        if (currentTarget == sourceContainer) return;
+
+        currentTarget.classList.add("drag-over");
+
+        const dragPreview = document.querySelector(".drag-preview");
+        if (draggedElement && !dragPreview) {
+          const previewElement = draggedElement.cloneNode(true);
+          previewElement.classList.add("drag-preview");
+          currentTarget.appendChild(previewElement);
+        }
+      }
+      function handleDragLeave(event) {
+        event.preventDefault();
+        const { currentTarget } = event;
+        currentTarget.classList.remove("drag-over");
+        currentTarget.querySelector(".drag-preview")?.remove();
+      }
+
+      function handleDragStart(event) {
+        draggedElement = event.target;
+        sourceContainer = draggedElement.parentNode;
+        event.dataTransfer.setData("text/plain", draggedElement.src);
+      }
+
+      function handleDragEnd(event) {
+        let draggedElement = null;
+        let sourceContainer = null;
+      }
+    </script>
+  </head>
+
+  <body>
+    <header id="top-header">
+      <img src="/assets/Tierlisttitlle.png" alt="" />
+    </header>
+
+    <section class="tier">
+      <div class="row">
+        <aside class="label" style="--level: var(--color-s)">
+          <span contenteditable="true">S</span>
+        </aside>
+      </div>
+
+      <div class="row">
+        <aside class="label" style="--level: var(--color-a)">
+          <span contenteditable="true">A</span>
+        </aside>
+      </div>
+      <div class="row">
+        <aside class="label" style="--level: var(--color-b)">
+          <span contenteditable="true">B</span>
+        </aside>
+      </div>
+      <div class="row">
+        <aside class="label" style="--level: var(--color-c)">
+          <span contenteditable="true">C</span>
+        </aside>
+      </div>
+      <div class="row">
+        <aside class="label" style="--level: var(--color-d)">
+          <span contenteditable="true">D</span>
+        </aside>
+      </div>
+      <div class="row">
+        <aside class="label" style="--level: var(--color-e)">
+          <span contenteditable="true">E</span>
+        </aside>
+      </div>
     </section>
+    <footer id="selector">
+      <section id="selector-buttons">
+        <label data-button="Agregar imagen">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+            <path d="M9 12h6" />
+            <path d="M12 9v6" />
+          </svg>
+          <input
+            multiple
+            id="image-input"
+            type="file"
+            hidden
+            accept="image/*"
+          />
+        </label>
+        <button data-button="Reiniciar">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+          </svg>
+        </button>
+      </section>
 
-    <section id="selector-items"></section>
-  </footer>
-</body>
-
+      <section id="selector-items"></section>
+    </footer>
+  </body>
 </html>
