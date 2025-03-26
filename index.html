@@ -2,274 +2,274 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tier List</title>
-    <style>
-        :root {
-            --color-s: #ff7f80;
-            --color-a: #ffc07f;
-            --color-b: #ffdf80;
-            --color-c: #fdff7f;
-            --color-d: #bfff7f;
-            --color-e: #7fff7f;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tier List</title>
+  <style>
+    :root {
+      --color-s: #ff7f80;
+      --color-a: #ffc07f;
+      --color-b: #ffdf80;
+      --color-c: #fdff7f;
+      --color-d: #bfff7f;
+      --color-e: #7fff7f;
+    }
 
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    button {
+      background: transparent;
+      border: 0;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    body {
+      background: black;
+      color: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        sans-serif;
+      margin: 0 auto;
+      max-width: 500px;
+      padding-inline: 32px;
+      user-select: none;
+    }
+
+    #top-header {
+      display: flex;
+      justify-content: center;
+      padding-block: 8px;
+
+      & img {
+        max-width: 300px;
+        height: auto;
+      }
+    }
+
+    .tier {
+      border: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      background: #1f1f1f;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      border-bottom: 1px solid #111;
+    }
+
+    .label {
+      cursor: pointer;
+
+      background: var(--level, #1df);
+      color: #333;
+      font-weight: bold;
+      height: 50px;
+      width: 50px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &span:focus {
+        outline: 1px solid #fff;
+      }
+    }
+
+    #selector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    #selector-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+
+      & button,
+      & label {
+        cursor: pointer;
+
+        border-radius: 50%;
+
+        transition: all 0.3s ease;
+        background: #222;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 8px;
+
+        &:hover {
+          background: #444;
+          scale: 1.1;
         }
+      }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
+      & svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
 
-        button {
-            background: transparent;
-            border: 0;
-            color: #fff;
-            cursor: pointer;
-        }
+    #selector-items {
+      border: 1px solid #1f1f1f;
+      width: 100%;
+      height: 200px;
+      margin-bottom: 100px;
+      display: flex;
+    }
 
-        body {
-            background: black;
-            color: white;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
-                'Helvetica Neue', sans-serif;
-            margin: 0 auto;
-            max-width: 500px;
-            padding-inline: 32px;
-            user-select: none;
-        }
+    .item-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      background: #fff;
+      cursor: grab;
+    }
+  </style>
+  <script type="module">
+    const $ = (el) => document.querySelector(el);
+    const $$ = (el) => document.querySelectorAll(el);
 
-        #top-header {
-            display: flex;
-            justify-content: center;
-            padding-block: 8px;
+    const imageInput = $("#image-input");
+    const itemsSection = $("#selector-items");
 
-            & img {
-                max-width: 300px;
-                height: auto;
-            }
-        }
+    function createItem(src) {
+      const imgElement = document.createElement("img");
+      imgElement.draggable = true;
+      imgElement.src = src;
+      imgElement.className = "item-image";
 
-        .tier {
-            border: 1px solid #444;
-            display: flex;
-            flex-direction: column;
-            background: #1f1f1f;
-        }
+      imgElement.addEventListener("dragstart", handleDragStart);
+      imgElement.addEventListener("dragend", handleDragEnd);
+      itemsSection.appendChild(imgElement);
+      return imgElement;
+    }
 
-        .row {
-            display: flex;
-            flex-direction: row;
-            border-bottom: 1px solid #111;
-        }
+    imageInput.addEventListener("change", (event) => {
+      const [file] = event.target.files;
+      if (file) {
+        const reader = new FileReader();
 
-        .label {
-            cursor: pointer;
+        reader.onload = (eventReader) => {
+          createItem(eventReader.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
-            background: var(--level, #1df);
-            color: #333;
-            font-weight: bold;
-            height: 50px;
-            width: 50px;
+    let draggedElement = null;
+    let sourceContainer = null;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    const rows = $$(".tier .row");
 
-            &span:focus {
-                outline: 1px solid #fff;
-            }
-        }
+    rows.forEach((row) => {
+      row.addEventListener("drop", handleDrop);
+      row.addEventListener("dragover", handleDropOver);
+      row.addEventListener("dragleave", handleDragLeave);
+    })
 
-        #selector {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            margin-top: 16px;
-        }
+    function handleDrop(event) {
+      event.preventDefault();
+      console.log();
 
-        #selector-buttons {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
+    }
 
-            & button,
-            & label {
-                cursor: pointer;
+    function handleDropOver(event) {
+      event.preventDefault();
+    }
+    function handleDragLeave(event) {
+      event.preventDefault();
+    }
 
-                border-radius: 50%;
+    function handleDragStart(event) {
+      console.log("drag start", event.target);
+      draggedElement = event.target;
+      const sourceContainer = draggedElement.parentNode;
+      event.dataTransfer.setData("text/plain", draggedElement.src);
+    }
 
-                transition: all .3s ease;
-                background: #222;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 48px;
-                height: 48px;
-                padding: 8px;
-
-                &:hover {
-                    background: #444;
-                    scale: 1.1;
-                }
-
-            }
-
-            & svg {
-                width: 100%;
-                height: 100%;
-            }
-        }
-
-        #selector-items {
-            border: 1px solid #1f1f1f;
-            width: 100%;
-            height: 200px;
-            margin-bottom: 100px;
-            display: flex;
-        }
-
-        .item-image {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            background: #fff;
-            cursor: grab;
-        }
-    </style>
-    <script type="module">
-        const $ = el => document.querySelector(el)
-        const $$ = el => document.querySelectorAll(el)
-
-        const imageInput = $('#image-input')
-        const itemsSection = $('#selector-items')
-
-        function createItem(src) {
-            const imgElement = document.createElement('img')
-            imgElement.draggable = true
-            imgElement.src = src
-            imgElement.className = 'item-image'
-
-            imgElement.addEventListener('dragstart', handleDragStart)
-            imgElement.addEventListener('dragend', handleDragEnd)
-            itemsSection.appendChild(imgElement)
-            return imgElement
-        }
-
-        imageInput.addEventListener('change', (event) => {
-            const [file] = event.target.files
-            if (file) {
-                const reader = new FileReader()
-
-                reader.onload = (eventReader) => {
-                    
-                    createItem(eventReader.target.result)
-                }
-                reader.readAsDataURL(file)
-            }
-
-        })
-
-        let draggedElement = null
-        let sourceContainer = null
-        
-        const  rows = $$('.tier .row')
-
-        rows.forEach(row =>{
-            row.addEventListener('drop',handleDrop)
-            row.addEventListener('dragover',handleDropOver)
-            row.addEventListener('dragleave',handleDragLeave)
-        })
-
-        function handleDrop(event){
-            event.preventDefault()
-        }
-        
-        function handleDropOver(event){}
-        function handleDragLeave(event){}
-
-        function handleDragStart(event) {
-            console.log('drag start', event.target)
-            draggedElement = event.target
-            const sourceContainer = draggedElement.parentNode
-        }
-
-        function handleDragEnd(event) {
-            console.log('drag end', event.target)
-            let draggedElement = null
-            let sourceContainer = null
-        }
-    </script>
-
-
+    function handleDragEnd(event) {
+      console.log("drag end", event.target);
+      let draggedElement = null;
+      let sourceContainer = null;
+    }
+  </script>
 </head>
 
 <body>
-    <header id="top-header">
-        <img src="/assets/Tierlisttitlle.png" alt="">
-    </header>
+  <header id="top-header">
+    <img src="/assets/Tierlisttitlle.png" alt="" />
+  </header>
 
-    <section class="tier">
-        <div class="row">
-            <aside class="label" style="--level:var(--color-s)">
-                <span contenteditable="true">S</span>
-            </aside>
-        </div>
+  <section class="tier">
+    <div class="row">
+      <aside class="label" style="--level: var(--color-s)">
+        <span contenteditable="true">S</span>
+      </aside>
+    </div>
 
-        <div class="row">
-            <aside class="label" style="--level:var(--color-a)">
-                <span contenteditable="true">A</span>
-            </aside>
-        </div>
-        <div class="row">
-            <aside class="label" style="--level:var(--color-b)">
-                <span contenteditable="true">B</span>
-            </aside>
-        </div>
-        <div class="row">
-            <aside class="label" style="--level:var(--color-c)">
-                <span contenteditable="true">C</span>
-            </aside>
-        </div>
-        <div class="row">
-            <aside class="label" style="--level:var(--color-d)">
-                <span contenteditable="true">D</span>
-            </aside>
-        </div>
-        <div class="row">
-            <aside class="label" style="--level:var(--color-e)">
-                <span contenteditable="true">E</span>
-            </aside>
-        </div>
+    <div class="row">
+      <aside class="label" style="--level: var(--color-a)">
+        <span contenteditable="true">A</span>
+      </aside>
+    </div>
+    <div class="row">
+      <aside class="label" style="--level: var(--color-b)">
+        <span contenteditable="true">B</span>
+      </aside>
+    </div>
+    <div class="row">
+      <aside class="label" style="--level: var(--color-c)">
+        <span contenteditable="true">C</span>
+      </aside>
+    </div>
+    <div class="row">
+      <aside class="label" style="--level: var(--color-d)">
+        <span contenteditable="true">D</span>
+      </aside>
+    </div>
+    <div class="row">
+      <aside class="label" style="--level: var(--color-e)">
+        <span contenteditable="true">E</span>
+      </aside>
+    </div>
+  </section>
+  <footer id="selector">
+    <section id="selector-buttons">
+      <label>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+          <path d="M9 12h6" />
+          <path d="M12 9v6" />
+        </svg>
+        <input id="image-input" type="file" hidden accept="image/*" />
+      </label>
+      <button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+          <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+        </svg>
+      </button>
     </section>
-    <footer id="selector">
-        <section id="selector-buttons">
-            <label>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-                    <path d="M9 12h6" />
-                    <path d="M12 9v6" />
-                </svg>
-                <input id="image-input" type="file" hidden accept="image/*">
-            </label>
-            <button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-                    <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                </svg>
-            </button>
-        </section>
 
-        <section id="selector-items"></section>
-
-    </footer>
+    <section id="selector-items"></section>
+  </footer>
 </body>
 
 </html>
